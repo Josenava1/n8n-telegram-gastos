@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: n8n-telegram-gastos
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    region: oregon
+    plan: free
+    healthCheckPath: /healthz
+    envVars:
+      # Autenticación básica
+      - key: N8N_BASIC_AUTH_ACTIVE
+        value: "true"
+      - key: N8N_BASIC_AUTH_USER
+        value: admin
+      - key: N8N_BASIC_AUTH_PASSWORD
+        generateValue: true
+        
+      # Base de datos
+      - key: DATABASE_TYPE
+        value: sqlite
+      - key: DB_SQLITE_VACUUM_ON_STARTUP
+        value: "true"
+        
+      # Encriptación
+      - key: N8N_ENCRYPTION_KEY
+        generateValue: true
+        
+      # URL del webhook
+      - key: WEBHOOK_URL
+        fromService:
+          type: web
+          name: n8n-telegram-gastos
+          envVarKey: RENDER_EXTERNAL_URL
+          
+      # Configuración del host
+      - key: N8N_HOST
+        fromService:
+          type: web
+          name: n8n-telegram-gastos
+          envVarKey: RENDER_EXTERNAL_URL
+          
+      # Otras configuraciones
+      - key: N8N_PAYLOAD_SIZE_MAX
+        value: "16"
+      - key: N8N_METRICS
+        value: "false"
+      - key: GENERIC_TIMEZONE
+        value: "America/Mexico_City"
